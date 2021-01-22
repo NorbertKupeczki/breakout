@@ -13,8 +13,14 @@ Game::~Game()
 
 }
 
+void Game::initTextures()
+{
+
+}
+
 bool Game::init()
 {
+  initTextures();
 
   return true;
 }
@@ -29,15 +35,12 @@ void Game::render()
 
 }
 
-void Game::mouseClicked(sf::Event event)
+void Game::keyPressed(sf::Event event)
 {
-  //get the click position
-  sf::Vector2i click = sf::Mouse::getPosition(window);
-
 
 }
 
-void Game::keyPressed(sf::Event event)
+void Game::keyReleased(sf::Event event)
 {
 
 }
