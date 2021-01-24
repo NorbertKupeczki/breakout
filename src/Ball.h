@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include "Vector2.h"
 
 class Ball
 {
@@ -10,39 +11,36 @@ class Ball
   Ball();
   ~Ball();
 
-  sf::Sprite ball_sprite;
-
   bool in_play;
+
+  // Vector and speed accessors and mutators
   float getSpeed();
   void setSpeed(float speed);
   void increaseSpeed();
   float getX();
   float getY();
   void reverseX();
-  void normalise();
+  void reverseY();
   void randomiseDirection();
-  bool collisionCheck(sf::RenderWindow& window, sf::Sprite p1, sf::Sprite p2);
-  void wallBounce();
   void adjustAngle(sf::Sprite paddle);
-  void setStartLocation(float loc);
-  float getStartLocation();
+
+  bool collisionCheck(sf::RenderWindow& window, sf::Sprite paddle);
+
+  void resetBall(sf::Sprite paddle);
+
+  sf::Sprite getSprite();
 
  private:
+  sf::Sprite ball_sprite;
   sf::SoundBuffer wall_bounce_bf;
   sf::SoundBuffer paddle_bounce_bf;
   sf::Sound wall_bounce;
   sf::Sound paddle_bounce;
 
   sf::Texture ball_texture;
-  struct Vector2
-  {
-    float x;
-    float y;
-  };
-
-  Vector2 ball_vector;
+  Vector2 ball_vector = {0.0f,0.0f};
   float ball_speed;
-  float y_loc;
+  float x_loc;
 
 };
 

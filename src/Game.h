@@ -6,6 +6,7 @@
 #include "Vector2.h"
 #include "Ball.h"
 #include "Paddle.h"
+#include "GameObject.h"
 
 class Game
 {
@@ -21,6 +22,18 @@ class Game
 
  private:
   sf::RenderWindow& window;
+  sf::Texture red_brick;
+  sf::Texture blue_brick;
+  sf::Texture green_brick;
+  sf::Texture grey_brick;
+  sf::Texture purple_brick;
+  sf::Texture yellow_brick;
+
+  Paddle paddle;
+  Ball ball;
+
+  GameObject brick_1;
+  GameObject brick_2;
 
 };
 

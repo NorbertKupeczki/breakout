@@ -4,18 +4,15 @@
 Paddle::Paddle()
 {
   std::cout << "Paddle created\n";
-
-  if(!paddle_texture_red.loadFromFile("Data/Images/paddleRed.png"))
-  {
-    std::cout << "Red paddle texture didn't load\n";
-  }
   if(!paddle_texture_blue.loadFromFile("Data/Images/paddleBlue.png"))
   {
     std::cout << "Red paddle texture didn't load\n";
   }
-  y_dir = 0.0f;
+  paddle_sprite.setTexture(paddle_texture_blue);
+
   paddle_speed = 200.0f;
   score = 0;
+  lives = 3;
 }
 
 Paddle::~Paddle()
@@ -28,9 +25,9 @@ int Paddle::getScore()
   return score;
 }
 
-void Paddle::addScore()
+void Paddle::addScore(int value)
 {
-  score++;
+  score += value;
 }
 
 void Paddle::resetScore()
@@ -38,42 +35,60 @@ void Paddle::resetScore()
   score = 0;
 }
 
-void Paddle::setColor(int player)
+int Paddle::getLives()
 {
-  if (player == 1)
-  {
-    paddle_sprite.setTexture(paddle_texture_blue);
-  }
-  else if (player == 2)
-  {
-    paddle_sprite.setTexture(paddle_texture_red);
-  }
+  return lives;
+}
+
+void Paddle::loseLife()
+{
+  lives--;
+}
+
+void Paddle::addLife()
+{
+  lives++;
+}
+
+void Paddle::resetLives()
+{
+  lives = 3;
 }
 
 float Paddle::getDir()
 {
-  return y_dir;
+  return vector.x;
 }
 
 void Paddle::setDir(float dir)
 {
   if (dir > 0.0)
   {
-    y_dir = 1.0;
+    vector.x = 1.0;
   }
   else if (dir < 0.0)
   {
-    y_dir = -1.0;
+    vector.x = -1.0;
   }
   else if (dir == 0.0)
   {
-    y_dir = 0.0;
+    vector.x = 0.0;
   }
 }
 
 float Paddle::getSpeed()
 {
   return paddle_speed;
+}
+
+sf::Sprite Paddle::getSprite()
+{
+  return paddle_sprite;
+}
+
+void Paddle::setPaddlePos(float x_pos, float y_pos)
+{
+  paddle_sprite.setPosition(x_pos,y_pos);
 }
 
 void Paddle::setSpeed(float speed)
@@ -83,8 +98,8 @@ void Paddle::setSpeed(float speed)
 
 void Paddle::resetPaddle(sf::RenderWindow& window)
 {
-  paddle_sprite.setPosition
-    (paddle_sprite.getPosition().x,
-     window.getSize().y / 2 - paddle_sprite.getLocalBounds().height / 2);
+  paddle_sprite.setPosition(
+    window.getSize().x / 2 - paddle_sprite.getLocalBounds().width / 2,
+    paddle_sprite.getPosition().y);
   setDir(0.0);
 }
