@@ -26,6 +26,7 @@ class Paddle
   void setDir(float dir);
   float getSpeed();
   void setSpeed(float speed);
+  void movePaddle(sf::RenderWindow& window, float dt);
 
   // Sprite accessor and mutator
   sf:: Sprite getSprite();

@@ -21,6 +21,8 @@ class Game
   void keyReleased(sf::Event event);
 
  private:
+  sf::Texture& texturePicker(int row);
+
   sf::RenderWindow& window;
   sf::Texture red_brick;
   sf::Texture blue_brick;
@@ -29,11 +31,22 @@ class Game
   sf::Texture purple_brick;
   sf::Texture yellow_brick;
 
+  const int GRID_SIZE = 16;
+  const int OFFSET = 28;
+
   Paddle paddle;
   Ball ball;
 
-  GameObject brick_1;
-  GameObject brick_2;
+  GameObject* brick_array;
+
+  enum Scene
+  {
+    MAIN_MENU = 0,
+    IN_GAME = 1,
+    GAME_OVER = 2
+  };
+
+  Scene active_scene;
 
 };
 

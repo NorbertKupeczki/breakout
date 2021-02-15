@@ -11,13 +11,24 @@ class GameObject
   GameObject();
   ~GameObject();
 
-  bool in_game;
   void setTexture(sf::Texture &colour);
   void setBrickPos(float x_pos, float y_pos);
+  void setState(std::string state);
+  bool isBrick();
+  bool isDiamond();
+  bool isInGame();
   sf::Sprite getSprite();
 
  private:
+  enum States
+  {
+    BRICK,
+    DIAMOND,
+    DESTROYED
+  };
+  States brick_state;
   sf::Sprite sprite;
+
 
 
 };
