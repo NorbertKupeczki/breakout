@@ -6,6 +6,7 @@ Ball::Ball()
 {
   std::cout << "Ball appears\n";
   ball_speed = 400.0f;
+  score = 0;
 
   if(!ball_texture.loadFromFile("Data/Images/ballGrey.png"))
   {
@@ -27,6 +28,12 @@ Ball::Ball()
     std::cout << "Paddle bounce sound didn't load to buffer!\n";
   }
   paddle_bounce.setBuffer(paddle_bounce_bf);
+
+  if (!brick_break_bf.loadFromFile("Data/Sounds/break.ogg"))
+  {
+    std::cout << "Brick break sound didn't load to buffer!\n";
+  }
+  brick_break.setBuffer(brick_break_bf);
 }
 
 Ball::~Ball()
@@ -34,37 +41,24 @@ Ball::~Ball()
   std::cout << "Ball object removed\n";
 }
 
-float Ball::getSpeed()
+bool Ball::inPlay()
 {
-  return ball_speed;
+  return in_play;
 }
 
-void Ball::setSpeed(float speed)
+int Ball::getScore()
 {
-  ball_speed = speed;
+  return score;
 }
 
-void Ball::increaseSpeed()
+void Ball::addScore(int value)
 {
-  ball_speed += 20.0;
+  score += value;
 }
 
-void Ball::randomiseDirection()
+void Ball::resetScore()
 {
-  if (rand() % 2 == 1)
-  {
-    reverseX();
-  }
-}
-
-float Ball::getX()
-{
-  return ball_vector.x;
-}
-
-float Ball::getY()
-{
-  return ball_vector.y;
+  score = 0;
 }
 
 void Ball::reverseX()
@@ -79,7 +73,7 @@ void Ball::reverseY()
 
 bool Ball::collisionCheck(sf::RenderWindow& window,
                           sf::Sprite paddle,
-                          GameObject* brick_array,
+                          Brick* brick_array,
                           int array_size)
 {
   int brick_index;
@@ -188,7 +182,7 @@ void Ball::adjustAngle(sf::Sprite paddle)
   ball_vector.normalise();
 }
 
-void Ball::brickBounce(GameObject& brick)
+void Ball::brickBounce(Brick& brick)
 {
   bool bounce_x = false;
   bool bounce_y = false;
@@ -200,107 +194,148 @@ void Ball::brickBounce(GameObject& brick)
   int br_right = brick.getSprite().getPosition().x +
                  brick.getSprite().getGlobalBounds().width;
   int br_top = brick.getSprite().getPosition().y;
-  int br_bottom = brick.getSprite().getPosition().x +
+  int br_bottom = brick.getSprite().getPosition().y +
                   brick.getSprite().getGlobalBounds().height;
 
-  if (ball_x >= br_left && ball_x <= br_right)
+  if (ball_vector.x < 0.0 && ball_vector.y < 0.0)
   {
-    bounce_y = true;
-  }
-  else if (ball_y >= br_top && ball_y <= br_bottom)
-  {
-    bounce_x = true;
-  }
-  else if (getDist(ball_x, ball_y, br_left, br_top) <= ball_rad)
-  {
-    if (ball_vector.x < 0.0)
+    if ((br_left <= ball_x && ball_x <= br_right) ||
+         getDist(ball_x, ball_y, br_left, br_bottom) <= ball_rad)
     {
       bounce_y = true;
     }
-    else if (ball_vector.y < 0.0)
+    else if ((br_top <= ball_y && ball_y <= br_bottom) ||
+              getDist(ball_x, ball_y, br_right, br_top) <= ball_rad)
     {
       bounce_x = true;
-    }
-    else if (abs(ball_x - br_left) <= abs(ball_y - br_top))
-    {
-      bounce_y = true;
     }
     else
     {
-      bounce_x = true;
+      if (ball_x - br_right <= ball_y - br_bottom)
+      {
+        bounce_y = true;
+      }
+      else
+      {
+        bounce_x = true;
+      }
     }
   }
-  else if (getDist(ball_x, ball_y, br_right, br_top) <= ball_rad)
+  else if (ball_vector.x > 0.0 && ball_vector.y < 0.0)
   {
-    if (ball_vector.x > 0.0)
+    if ((br_left <= ball_x && ball_x <= br_right) ||
+        getDist(ball_x, ball_y, br_right, br_bottom) <= ball_rad)
     {
       bounce_y = true;
     }
-    else if (ball_vector.y < 0.0)
+    else if ((br_top <= ball_y && ball_y <= br_bottom) ||
+             getDist(ball_x, ball_y, br_left, br_top) <= ball_rad)
     {
       bounce_x = true;
-    }
-    else if (abs(ball_x - br_right) <= abs(ball_y - br_top))
-    {
-      bounce_y = true;
     }
     else
     {
-      bounce_x = true;
+      if (br_left - ball_x <= ball_y - br_bottom)
+      {
+        bounce_y = true;
+      }
+      else
+      {
+        bounce_x = true;
+      }
     }
   }
-  else if (getDist(ball_x, ball_y, br_left, br_bottom) <= ball_rad)
+  else if (ball_vector.x > 0.0 && ball_vector.y > 0.0)
   {
-    if (ball_vector.x < 0.0)
+    if ((br_left <= ball_x && ball_x <= br_right) ||
+        getDist(ball_x, ball_y, br_right, br_top) <= ball_rad)
     {
       bounce_y = true;
     }
-    else if (ball_vector.y > 0.0)
+    else if ((br_top <= ball_y && ball_y <= br_bottom) ||
+             getDist(ball_x, ball_y, br_left, br_bottom) <= ball_rad)
     {
       bounce_x = true;
-    }
-    else if (abs(ball_x - br_left) <= abs(ball_y - br_bottom))
-    {
-      bounce_y = true;
     }
     else
     {
-      bounce_x = true;
+      if (br_left - ball_x <= br_top - ball_y)
+      {
+        bounce_y = true;
+      }
+      else
+      {
+        bounce_x = true;
+      }
     }
   }
-  else if (getDist(ball_x, ball_y, br_right, br_bottom) <= ball_rad)
+  else if (ball_vector.x < 0.0 && ball_vector.y > 0.0)
   {
-    if (ball_vector.x > 0.0)
+    if ((br_left <= ball_x && ball_x <= br_right) ||
+        getDist(ball_x, ball_y, br_left, br_top) <= ball_rad)
     {
       bounce_y = true;
     }
-    else if (ball_vector.y > 0.0)
+    else if ((br_top <= ball_y && ball_y <= br_bottom) ||
+             getDist(ball_x, ball_y, br_right, br_bottom) <= ball_rad)
     {
       bounce_x = true;
-    }
-    else if (abs(ball_x - br_right) <= abs(ball_y - br_bottom))
-    {
-      bounce_y = true;
     }
     else
     {
-      bounce_x = true;
+      if (ball_x - br_right <= br_top - ball_y)
+      {
+        bounce_y = true;
+      }
+      else
+      {
+        bounce_x = true;
+      }
+    }
+  }
+  else if (ball_vector.x == 0.0)
+  {
+    if (br_left < ball_x && ball_x < br_right)
+    {
+      bounce_y = true;
+    }
+    else if (getDist(ball_x, ball_y, br_left, br_bottom) <= ball_rad)
+    {
+      ball_vector.x = -0.3;
+      bounce_y = true;
+      ball_vector.normalise();
+    }
+    else if (getDist(ball_x, ball_y, br_right, br_bottom) <= ball_rad)
+    {
+      ball_vector.x = 0.3;
+      bounce_y = true;
+      ball_vector.normalise();
     }
   }
 
   if (bounce_x)
   {
     reverseX();
-    brick.setState("destroyed");
-    std::cout << "Collision" << std::endl;
+    if (ball_vector.x < 0.0 && ball_vector.x > -0.3)
+    {
+      ball_vector.x = -0.3;
+      ball_vector.normalise();
+    }
+    else if (ball_vector.x > 0.0 && ball_vector.x < 0.3)
+    {
+      ball_vector.x = 0.3;
+      ball_vector.normalise();
+    }
+    brick.setState(false);
   }
   else if (bounce_y)
   {
     reverseY();
-    brick.setState("destroyed");
-    std::cout << "Collision" << std::endl;
+    brick.setState(false);
   }
-
+  addScore(brick.getValue());
+  brick_break.play();
+  number_of_bricks--;
 }
 
 void Ball::resetBall(sf::Sprite paddle)
@@ -309,6 +344,8 @@ void Ball::resetBall(sf::Sprite paddle)
     paddle.getPosition().x + paddle.getGlobalBounds().width / 2 -
     ball_sprite.getGlobalBounds().width / 2,
     paddle.getPosition().y - ball_sprite.getGlobalBounds().height);
+  ball_on_paddle = true;
+  in_play = true;
 }
 
 bool Ball::isBallOnPaddle()
@@ -329,4 +366,19 @@ sf::Sprite Ball::getSprite()
 float Ball::getDist(float a1, float a2, float b1, float b2)
 {
   return sqrt(pow(a1 - b1,2) + pow(a2 - b2,2));
+}
+
+void Ball::increaseBrickCount()
+{
+  number_of_bricks++;
+}
+
+int Ball::getBrickCount()
+{
+  return number_of_bricks;
+}
+
+void Ball::setBrickCount(int count)
+{
+  number_of_bricks = count;
 }

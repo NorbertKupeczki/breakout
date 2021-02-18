@@ -11,28 +11,12 @@ Paddle::Paddle()
   paddle_sprite.setTexture(paddle_texture_blue);
 
   paddle_speed = 300.0f;
-  score = 0;
   lives = 3;
 }
 
 Paddle::~Paddle()
 {
   std::cout << "Paddle removed\n";
-}
-
-int Paddle::getScore()
-{
-  return score;
-}
-
-void Paddle::addScore(int value)
-{
-  score += value;
-}
-
-void Paddle::resetScore()
-{
-  score = 0;
 }
 
 int Paddle::getLives()
@@ -45,19 +29,9 @@ void Paddle::loseLife()
   lives--;
 }
 
-void Paddle::addLife()
-{
-  lives++;
-}
-
 void Paddle::resetLives()
 {
   lives = 3;
-}
-
-float Paddle::getDir()
-{
-  return vector.x;
 }
 
 void Paddle::setDir(float dir)
@@ -76,11 +50,6 @@ void Paddle::setDir(float dir)
   }
 }
 
-float Paddle::getSpeed()
-{
-  return paddle_speed;
-}
-
 sf::Sprite Paddle::getSprite()
 {
   return paddle_sprite;
@@ -89,11 +58,6 @@ sf::Sprite Paddle::getSprite()
 void Paddle::setPaddlePos(float x_pos, float y_pos)
 {
   paddle_sprite.setPosition(x_pos,y_pos);
-}
-
-void Paddle::setSpeed(float speed)
-{
-  paddle_speed = speed;
 }
 
 void Paddle::movePaddle(sf::RenderWindow& window, float dt)

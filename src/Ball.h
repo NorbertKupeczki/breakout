@@ -12,29 +12,31 @@ class Ball
   Ball();
   ~Ball();
 
-  bool in_play;
+  bool inPlay();
 
-  // Vector and speed accessors and mutators
-  float getSpeed();
-  void setSpeed(float speed);
-  void increaseSpeed();
-  float getX();
-  float getY();
+  // Score accessors and mutators
+  int getScore();
+  void addScore(int value);
+  void resetScore();
+
+  // Vector accessors and mutators
   void reverseX();
   void reverseY();
-  void randomiseDirection();
   void moveBall(sf::Sprite, float dt);
   void adjustAngle(sf::Sprite paddle);
-  void brickBounce(GameObject& brick);
-
+  void brickBounce(Brick& brick);
   bool collisionCheck(sf::RenderWindow& window,
                       sf::Sprite paddle,
-                      GameObject* brick_array,
+                      Brick* brick_array,
                       int array_size);
 
+  // Auxiliary functions
   void resetBall(sf::Sprite paddle);
   bool isBallOnPaddle();
   void setBallOnPaddle(bool state);
+  void increaseBrickCount();
+  void setBrickCount(int count);
+  int getBrickCount();
 
   sf::Sprite getSprite();
 
@@ -43,14 +45,18 @@ class Ball
   sf::Sprite ball_sprite;
   sf::SoundBuffer wall_bounce_bf;
   sf::SoundBuffer paddle_bounce_bf;
+  sf::SoundBuffer brick_break_bf;
   sf::Sound wall_bounce;
   sf::Sound paddle_bounce;
+  sf::Sound brick_break;
 
   sf::Texture ball_texture;
   Vector2 ball_vector  = {0.0, - 1.0};;
   float ball_speed;
-  float x_loc;
   bool ball_on_paddle;
+  bool in_play;
+  int score;
+  int number_of_bricks = 0;
 
 };
 
